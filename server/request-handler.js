@@ -11,8 +11,10 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+//var dispatcher = require('httpdispatcher');
 
 var requestHandler = function(request, response) {
+
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -28,9 +30,11 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
   console.log("Serving request type " + request.method + " for url " + request.url);
+  console.log('Data request: ', response.data);
 
   // The outgoing status.
   var statusCode = 200;
+
 
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
@@ -43,16 +47,51 @@ var requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
+  var object = {
+    results: [],
+  };
+
+//we need to do the following:
+//add on response for our GET request
+//add on data response for POST that concats the chunks we are getting
+//add on end for our post
+
+    object.results.push(request.method);
+
+if(request.method === 'GET'){
+  var testObject = JSON.stringify(object);
+  response.end(testObject)
+} else if(request.method === 'POST'){
+
+  request.on('data', function(chunk){
+    object.results.push(chunk);
+    statusCode = 201;
+  })
+  response.end(object);
+   // statusCode = 201;
+} 
+
+
+  
+
   response.writeHead(statusCode, headers);
+  
+  // try {
+  //     //log the request on console
+  //     console.log(request.url);
+  //     //Disptach
+  //     dispatcher.dispatch(request, response);
+  // } catch(err) {
+  //     console.log(err);
+  // }
 
-
-  request.on('error', function(err) {
-    console.error(err);
-  }).on('data', function(chunk) {
-    body.push(chunk);
-  }).on('end', function() {
-    body = Buffer.concat(body).toString();
-  }
+  // request.on('error', function(err) {
+  //   console.error(err);
+  // }).on('data', function(chunk) {
+  //   body.push(chunk);
+  // }).on('end', function() {
+  //   body = Buffer.concat(body).toString();
+  // }
     
 
   // Make sure to always call response.end() - Node may not send
@@ -62,8 +101,9 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end("Hello, World!");
+  response.end(testObject);
 };
+
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
