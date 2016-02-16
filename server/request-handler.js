@@ -16,6 +16,7 @@ this file and include it in basic-server.js so that it actually works.
     results: [],
   };
 
+
 var requestHandler = function(request, response) {
 
   // Request and Response come from node's http module.
@@ -70,20 +71,21 @@ if (request.method === 'POST') {
     var parsedData = JSON.parse(data);
     object.results.push(parsedData);
     response.writeHead(statusCode, headers);
-    console.log('!!!!!!!!!!!!! INSIDE POST', object)
       var getResult = JSON.stringify(object);
-      console.log('------------ INSDE POST', getResult)
     response.end(getResult);
   })
 }
 
 if (request.method === 'GET') {
-  console.log('88888888888', object);
+  console.log('*******URL',request.url);
+  if(request.url === '/arglebargle'){
+    response.writeHead(404, headers);
+    response.end();
+  } else{
   var getResult = JSON.stringify(object);
-  console.log('****** INSIDE GET', getResult);
   response.end(getResult);
 }
-
+};
 response.writeHead(statusCode, headers);
 // if (request.method === 'POST'){
 //   var data;
