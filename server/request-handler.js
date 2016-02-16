@@ -12,6 +12,9 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 //var dispatcher = require('httpdispatcher');
+  var object = {
+    results: [],
+  };
 
 var requestHandler = function(request, response) {
 
@@ -47,34 +50,86 @@ var requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  var object = {
-    results: [],
-  };
 
 //we need to do the following:
 //add on response for our GET request
 //add on data response for POST that concats the chunks we are getting
 //add on end for our post
 
-    object.results.push(request.method);
+ //   object.results.push(request.method);
+    //we need write the response headers inside of each 'post' & 'get'
 
-if(request.method === 'GET'){
-  var testObject = JSON.stringify(object);
-  response.end(testObject)
-} else if(request.method === 'POST'){
-
-  request.on('data', function(chunk){
-    object.results.push(chunk);
-    statusCode = 201;
+if (request.method === 'POST') {
+  statusCode = 201;
+  var data = '';
+  request.on('data', function(chunk) {
+    data += chunk;
+    //object.results.push(data)
+  });
+  request.on('end', function() {
+    var parsedData = JSON.parse(data);
+    object.results.push(parsedData);
+    response.writeHead(statusCode, headers);
+    console.log('!!!!!!!!!!!!! INSIDE POST', object)
+      var getResult = JSON.stringify(object);
+      console.log('------------ INSDE POST', getResult)
+    response.end(getResult);
   })
-  response.end(object);
-   // statusCode = 201;
-} 
+}
 
+if (request.method === 'GET') {
+  console.log('88888888888', object);
+  var getResult = JSON.stringify(object);
+  console.log('****** INSIDE GET', getResult);
+  response.end(getResult);
+}
+
+response.writeHead(statusCode, headers);
+// if (request.method === 'POST'){
+//   var data;
+//    request.on('data', function(chunk) {
+//     data += chunk;
+//    })
+//    request.on('end', function() {
+//     response.writeHead(201, headers)
+//     object.results.push(data);
+//     var getResult = JSON.stringify(object);
+//     response.end(getResult);
+//    })
+// }
+
+// console.log('inside GET ----------',object)
+// if(request.method === 'GET'){
+//   resquest.on('end', function() {
+//     response.writeHead(200, headers)
+//     console.log('this is object in GET ', object)
+//     var getResult = JSON.stringify(object);
+//     response.end(getResult);  
+//   })
+// }
+// if(request.method === "GET") {
+//       response.writeHead(200, {'Content-Type': 'application/json'});
+//       response.end(formOutput);
+//   } else if(request.method === "POST") {
+//       var requestBody = '';
+//       request.on('data', function(data) {
+//         requestBody += data;
+//       });
+//       request.on('end', function() {
+//         var formData = JSON.stringify(requestBody);
+//         response.writeHead(201, {'Content-Type': 'application/json'});
+//         response.end(formData);
+//       });
+//      else {
+//       response.writeHead(404, 'Resource Not Found', {'Content-Type': 'text/html'});
+//       response.end('<!doctype html><html><head><title>404</title></head><body>404: Resource Not Found</body></html>');
+//     }
+//   } 
+// }
 
   
 
-  response.writeHead(statusCode, headers);
+  //response.writeHead(statusCode, headers);
   
   // try {
   //     //log the request on console
@@ -101,7 +156,7 @@ if(request.method === 'GET'){
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end(testObject);
+  //response.end(object);
 };
 
 
