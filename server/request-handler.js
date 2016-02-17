@@ -11,10 +11,10 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-//var dispatcher = require('httpdispatcher');
-  var object = {
+
+var object = {
     results: [],
-  };
+};
 
 
 var requestHandler = function(request, response) {
@@ -49,17 +49,6 @@ var requestHandler = function(request, response) {
   // other than plain text, like JSON or HTML.
   headers['Content-Type'] = "application/json";
 
-  // .writeHead() writes to the request line and headers of the response,
-  // which includes the status and all headers.
-
-//we need to do the following:
-//add on response for our GET request
-//add on data response for POST that concats the chunks we are getting
-//add on end for our post
-
- //   object.results.push(request.method);
-    //we need write the response headers inside of each 'post' & 'get'
-
 if (request.method === 'POST') {
   statusCode = 201;
   var data = '';
@@ -77,88 +66,16 @@ if (request.method === 'POST') {
 }
 
 if (request.method === 'GET') {
-  console.log('*******URL',request.url);
-  if(request.url === '/arglebargle'){
-    response.writeHead(404, headers);
-    response.end();
-  } else{
+  if(request.url === '/classes/room1' || request.url === '/classes/messages'){
   var getResult = JSON.stringify(object);
   response.end(getResult);
-}
+  } else{
+    response.writeHead(404, headers);
+    response.end();
+  }
 };
+
 response.writeHead(statusCode, headers);
-// if (request.method === 'POST'){
-//   var data;
-//    request.on('data', function(chunk) {
-//     data += chunk;
-//    })
-//    request.on('end', function() {
-//     response.writeHead(201, headers)
-//     object.results.push(data);
-//     var getResult = JSON.stringify(object);
-//     response.end(getResult);
-//    })
-// }
-
-// console.log('inside GET ----------',object)
-// if(request.method === 'GET'){
-//   resquest.on('end', function() {
-//     response.writeHead(200, headers)
-//     console.log('this is object in GET ', object)
-//     var getResult = JSON.stringify(object);
-//     response.end(getResult);  
-//   })
-// }
-// if(request.method === "GET") {
-//       response.writeHead(200, {'Content-Type': 'application/json'});
-//       response.end(formOutput);
-//   } else if(request.method === "POST") {
-//       var requestBody = '';
-//       request.on('data', function(data) {
-//         requestBody += data;
-//       });
-//       request.on('end', function() {
-//         var formData = JSON.stringify(requestBody);
-//         response.writeHead(201, {'Content-Type': 'application/json'});
-//         response.end(formData);
-//       });
-//      else {
-//       response.writeHead(404, 'Resource Not Found', {'Content-Type': 'text/html'});
-//       response.end('<!doctype html><html><head><title>404</title></head><body>404: Resource Not Found</body></html>');
-//     }
-//   } 
-// }
-
-  
-
-  //response.writeHead(statusCode, headers);
-  
-  // try {
-  //     //log the request on console
-  //     console.log(request.url);
-  //     //Disptach
-  //     dispatcher.dispatch(request, response);
-  // } catch(err) {
-  //     console.log(err);
-  // }
-
-  // request.on('error', function(err) {
-  //   console.error(err);
-  // }).on('data', function(chunk) {
-  //   body.push(chunk);
-  // }).on('end', function() {
-  //   body = Buffer.concat(body).toString();
-  // }
-    
-
-  // Make sure to always call response.end() - Node may not send
-  // anything back to the client until you do. The string you pass to
-  // response.end() will be the body of the response - i.e. what shows
-  // up in the browser.
-  //
-  // Calling .end "flushes" the response's internal buffer, forcing
-  // node to actually send all the data over to the client.
-  //response.end(object);
 };
 
 
